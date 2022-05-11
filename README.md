@@ -14,7 +14,7 @@ Then test before commit
 * >cd C:/Users/disch/Documents/OpenClassrooms/Workspace/20220411-Projet_7_Implementez_un_modele_de_scoring/Projet_7/repository/scoring-bank-p7
 * >python -m venv venv
 * >CALL venv/Scripts/activate.bat
-* >pip install numpy pandas joblib pydantic fastapi sklearn lightgbm uvicorn
+* >pip install numpy pandas joblib pydantic fastapi sklearn lightgbm uvicorn gunicorn
 * >pip freeze > requirements.txt
 
 Step 3. Initiate GIT in the project folder
