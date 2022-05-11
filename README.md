@@ -25,3 +25,6 @@ Step 3. Initiate GIT in the project folder
 * [project folder pathname] > heroku login
 * [project folder pathname] > heroku git:remote -a scoring-bank-p7
 * [project folder pathname] > git push heroku master
+
+* accessing app https://scoring-bank-p7.herokuapp.com/
+* checking logs https://dashboard.heroku.com/apps/scoring-bank-p7/logs
