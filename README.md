@@ -8,7 +8,7 @@
 * **Step 0b.** Double-click the `pip_install_requirements.bat` to install all required python packages stated in the `requirements.txt` file into the virtual environment created
 
 
->python -m venv venv
->CALL venv/Scripts/activate.bat
->pip install numpy pandas joblib pydantic fastapi sklearn lightgbm uvicorn
->pip freeze > requirements.txt
+* >python -m venv venv
+* >CALL venv/Scripts/activate.bat
+* >pip install numpy pandas joblib pydantic fastapi sklearn lightgbm uvicorn
+* >pip freeze > requirements.txt

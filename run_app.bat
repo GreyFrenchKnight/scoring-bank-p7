@@ -1,4 +1,4 @@
-CALL .env/Scripts/activate.bat
+CALL venv/Scripts/activate.bat
 
 @echo off
 uvicorn app:app
