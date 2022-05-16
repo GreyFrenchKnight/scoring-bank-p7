@@ -6,13 +6,18 @@ import pandas as pd
 import os
 
 import joblib
-from pydantic import create_model
-from fastapi import FastAPI
+from pydantic import create_model, BaseModel
+from typing import List
+
+
+from fastapi import FastAPI, Request, Response
+from fastapi.responses import FileResponse
+
 
 # https://realpython.com/fastapi-python-web-apis/
 # launch API in local
-# cd C:\Users\disch\Documents\OpenClassrooms\Workspace\20220411-Projet_7_Implementez_un_modele_de_scoring\Projet_7
-# uvicorn P7_API:app --reload
+# cd C:\Users\disch\Documents\OpenClassrooms\Workspace\20220411-Projet_7_Implementez_un_modele_de_scoring\Projet_7\repository\scoring-bank-p7
+# uvicorn app:app --reload
 
 # Basic URL
 # http://127.0.0.1:8000
@@ -49,6 +54,18 @@ else:
     print('\nNumeric features: \t', numeric_feats)
 
     #
+    # Data
+    #
+    
+    db_test = pd.read_csv('https://github.com/StevPav/OCR_Data_Scientist_P7/blob/70ed8a21e2d52f1d7c927f0ea5d496e5c77de617/Data/df_app.csv?raw=true')
+    db_test['YEARS_BIRTH'] = (db_test['DAYS_BIRTH']/-365).apply(lambda x: int(x))
+    db_test = db_test.reset_index(drop=True)
+    
+    db_display = db_test[['SK_ID_CURR','CODE_GENDER','YEARS_BIRTH','NAME_FAMILY_STATUS','CNT_CHILDREN',
+             'NAME_EDUCATION_TYPE','FLAG_OWN_CAR','FLAG_OWN_REALTY','NAME_HOUSING_TYPE',
+             'NAME_INCOME_TYPE','AMT_INCOME_TOTAL','AMT_CREDIT','AMT_ANNUITY']]
+    
+    #
     # API
     #
 
@@ -58,11 +75,58 @@ else:
     async def root():
         return {"message": "Loan repayment API deployed"}
     
-    @app.get("/model")
-    async def get_model():
-        return model
-
-    @app.post("/loan_repayment/")
+    #@app.get("/model")
+    #async def get_model(response: Response):
+    #    response.headers["Accept"] = 'application/octet-stream'
+    #    return FileResponse(path='bin/model.joblib', filename='model.joblib', media_type='application/octet-stream')
+    
+    @app.get("/clients")
+    async def all_clients():    
+        return Response(db_display.to_json(orient="records"), media_type="application/json")
+    
+    
+    #class Criterion(BaseModel):
+    #    feature: str
+    #    value: str | int
+    #    
+    #class Filters(BaseModel):
+    #    data: List[Criterion]
+    #
+    #def filter(df, col, value):
+    #	'''Fonction pour filtrer le dataframe selon la colonne et la valeur définies'''
+    #	if value != 'All':
+    #		db_filtered = df.loc[df[col]==value]
+    #	else:
+    #		db_filtered = df
+    #	return db_filtered
+    
+    #    @app.post("/filter_clients")
+    #     async def filter_clients(filters: Filters):
+    #         print('filters: \t', filters)
+    #         print('filters.data: \t', filters.data)
+            
+    #         #Affichage du dataframe selon les filtres définis
+    #         db_display=db_test[['SK_ID_CURR','CODE_GENDER','YEARS_BIRTH','NAME_FAMILY_STATUS','CNT_CHILDREN',
+    #         'NAME_EDUCATION_TYPE','FLAG_OWN_CAR','FLAG_OWN_REALTY','NAME_HOUSING_TYPE',
+    #         'NAME_INCOME_TYPE','AMT_INCOME_TOTAL','AMT_CREDIT','AMT_ANNUITY']]
+    #         db_display['YEARS_BIRTH']=db_display['YEARS_BIRTH'].astype(str)
+    #         db_display['CNT_CHILDREN']=db_display['CNT_CHILDREN'].astype(str)
+    #         db_display['AMT_INCOME_TOTAL']=db_test['AMT_INCOME_TOTAL'].apply(lambda x: int(x))
+    #         db_display['AMT_CREDIT']=db_test['AMT_CREDIT'].apply(lambda x: int(x))
+    #         db_display['AMT_ANNUITY']=db_test['AMT_ANNUITY'].apply(lambda x: x if pd.isna(x) else int(x))
+            
+    #         for criteria in filters.data:
+    #             print(criteria.feature + " - " + criteria.value)
+    #             db_display=filter(db_display, criteria.feature, criteria.value)
+            
+    #         #return {
+    #         #    "status" : "SUCCESS",
+    #         #    "data" : db_display
+    #         #}
+        
+    #         return Response(db_display.to_json(orient="records"), media_type="application/json")
+    
+    @app.post("/loan_repayment")
     async def predict_loan_repayment(client: ClientModel):
         print('Client: \t', client)
         
