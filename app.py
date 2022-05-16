@@ -11,7 +11,8 @@ from fastapi import FastAPI
 
 # https://realpython.com/fastapi-python-web-apis/
 # launch API in local
-# uvicorn app:app --reload
+# cd C:\Users\disch\Documents\OpenClassrooms\Workspace\20220411-Projet_7_Implementez_un_modele_de_scoring\Projet_7
+# uvicorn P7_API:app --reload
 
 # Basic URL
 # http://127.0.0.1:8000
@@ -56,6 +57,10 @@ else:
     @app.get("/")
     async def root():
         return {"message": "Loan repayment API deployed"}
+    
+    @app.get("/model")
+    async def get_model():
+        return model
 
     @app.post("/loan_repayment/")
     async def predict_loan_repayment(client: ClientModel):
