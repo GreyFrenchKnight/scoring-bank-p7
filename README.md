@@ -1,5 +1,5 @@
-# your-custom-app-name
-#### What this is - A demonstration/tutorial on deploying a python Machine Learning model to Heroku via Flask 
+# scoring-bank-p7
+#### What this is - A demonstration/tutorial on deploying a python Machine Learning model to Heroku 
 ![ml_life_cycle](https://github.com/incubated-geek-cc/mental-healthcare-predictors/blob/main/ml_life_cycle.png)
 #### Full article can be found at: [Towards Data Science](https://towardsdatascience.com/deploy-your-python-machine-learning-models-on-heroku-in-3-steps-dc5b6aca73d9)
 #### Web application deployed at: https://your-custom-app-name.herokuapp.com/
@@ -8,7 +8,7 @@
 
 #### Step 2. Initiate Project Folder on Local PC
 * Test before commit
-* [any folder pathname] > cd C:/Users/disch/Documents/OpenClassrooms/Workspace/20220411-Projet_7_Implementez_un_modele_de_scoring/Projet_7/repository/scoring-bank-p7
+* [any folder pathname] > cd [project folder pathname]
 * [project folder pathname] > python -m venv venv
 * [project folder pathname] > CALL venv/Scripts/activate.bat
 * [project folder pathname] > pip install numpy pandas joblib pydantic fastapi sklearn lightgbm uvicorn gunicorn
