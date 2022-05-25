@@ -6,13 +6,12 @@ import pandas as pd
 import os
 
 import joblib
-from pydantic import create_model, BaseModel
-from typing import List
+from pydantic import create_model #, BaseModel
+# from typing import List
 
-
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Response #, Request
 from fastapi.responses import FileResponse
-
+import json
 
 # https://realpython.com/fastapi-python-web-apis/
 # launch API in local
@@ -24,6 +23,21 @@ from fastapi.responses import FileResponse
 
 # Documentation
 # http://127.0.0.1:8000/docs
+
+def readFileToList(filepath, label):
+    # opening the file in read mode
+    _file = open(filepath, 'r')
+    # reading the file
+    data = _file.read()
+    # replacing end splitting the text 
+    # when newline ('\n') is seen.
+    data_list = data.split("\n")
+    data_list.remove("")
+    print("\n" + label, data_list)
+    _file.close()
+    
+    return data_list
+
 
 if not os.path.exists('bin'):
     print('problem, bin folder not existing in path')
@@ -57,13 +71,20 @@ else:
     # Data
     #
     
-    db_test = pd.read_csv('https://github.com/StevPav/OCR_Data_Scientist_P7/blob/70ed8a21e2d52f1d7c927f0ea5d496e5c77de617/Data/df_app.csv?raw=true')
-    db_test['YEARS_BIRTH'] = (db_test['DAYS_BIRTH']/-365).apply(lambda x: int(x))
+    features_for_model_prediction = readFileToList('bin/features_for_model_prediction.txt', 'Features for model prediction:')
+    features_for_dashboard_table = readFileToList('bin/features_for_dashboard_table.txt', 'Features for dashboard main table:')
+    
+    compression_opts = dict(method='zip', archive_name='data.csv')
+    db_test = pd.read_csv('bin/data.zip', compression=compression_opts)  
+    print('\nData shape: \t', db_test.shape)
     db_test = db_test.reset_index(drop=True)
     
-    db_display = db_test[['SK_ID_CURR','CODE_GENDER','YEARS_BIRTH','NAME_FAMILY_STATUS','CNT_CHILDREN',
-             'NAME_EDUCATION_TYPE','FLAG_OWN_CAR','FLAG_OWN_REALTY','NAME_HOUSING_TYPE',
-             'NAME_INCOME_TYPE','AMT_INCOME_TOTAL','AMT_CREDIT','AMT_ANNUITY']]
+    shap_expected_value = float(readFileToList('bin/shap_expected_value.txt', 'SHAP expected value:')[0])
+    
+    #shap_shap_values = np.genfromtxt('bin/shap_shap_values.txt', dtype=float, delimiter=" ")
+    #print("\nSHAP SHAP value:", shap_shap_values)
+    
+    print("\n")
     
     #
     # API
@@ -78,12 +99,29 @@ else:
     #@app.get("/model")
     #async def get_model(response: Response):
     #    response.headers["Accept"] = 'application/octet-stream'
-    #    return FileResponse(path='bin/model.joblib', filename='model.joblib', media_type='application/octet-stream')
+    #    return FileResponse(path='bin/model.joblib', filename='model.joblib', media_type='application/octet-stream') 
+    
+    @app.get("/features_for_model_prediction")
+    async def get_features_for_model_prediction():
+        return features_for_model_prediction
+    
+    @app.get("/features_for_dashboard_table")
+    async def get_features_for_dashboard_table():
+        return features_for_dashboard_table
     
     @app.get("/clients")
-    async def all_clients():    
-        return Response(db_display.to_json(orient="records"), media_type="application/json")
+    async def get_all_clients():    
+        return Response(db_test.to_json(orient="records"), media_type="application/json")
     
+    @app.get("/shap_expected_value")
+    async def get_shap_expected_value():
+        print(shap_expected_value)
+        return shap_expected_value
+    
+    @app.get("/shap_shap_values")
+    async def get_shap_shap_values():    
+        #return Response(json.dumps(shap_shap_values.tolist()), media_type="application/json")
+        return FileResponse(path='bin/shap_shap_values.txt', filename='shap_shap_values.txt', media_type='application/octet-stream') 
     
     #class Criterion(BaseModel):
     #    feature: str
@@ -127,16 +165,9 @@ else:
     #         return Response(db_display.to_json(orient="records"), media_type="application/json")
     
     @app.post("/loan_repayment")
-    async def predict_loan_repayment(client: ClientModel):
+    async def get_loan_repayment_prediction(client: ClientModel):
         print('Client: \t', client)
-        
-        # Feature engineering
-        client.CREDIT_INCOME_PERCENT = client.AMT_CREDIT / client.AMT_INCOME_TOTAL
-        client.ANNUITY_INCOME_PERCENT = client.AMT_ANNUITY / client.AMT_INCOME_TOTAL
-        client.CREDIT_TERM = client.AMT_ANNUITY / client.AMT_CREDIT
-        client.DAYS_EMPLOYED_PERCENT = client.DAYS_EMPLOYED / client.DAYS_BIRTH
-        print('\nFeatures shape after feature engineering: \t', client)
-    
+            
         # ohe
         cat_array = pd.DataFrame(data=[[getattr(client, categorical_feat) for categorical_feat in categorical_feats]], columns=categorical_feats)
         # cat_array = client[categorical_feats_filtered]
@@ -148,17 +179,30 @@ else:
         # scaler
         num_array = pd.DataFrame(data=[[getattr(client, numeric_feat) for numeric_feat in numeric_feats]], columns=numeric_feats)
         # # num_array = client[numeric_feats]
-        print('\nFeatures shape before imputing/scaling: \t', num_array.shape)
+        print('\nFeatures shape for scaling: \t\t\t', num_array.shape)
         num_array = scaler.transform(num_array)
-        print('Features shape after imputing/scaling: \t\t', num_array.shape)
     
-        # predict
+        # predict with model
         X = np.concatenate([cat_array_encoded, num_array], axis=1)
         X = np.asarray(X)    
-        print('X to predict: \t\t', X)
-        y_proba = model.predict_proba(X)[0, 1]
-        print('Target = 1 probability: \t\t', y_proba)
-    
-        return y_proba
+        print('\nX to predict:\n', X)
+        y_pred = model.predict_proba(X)[0, 1]
+        print('\nProbability of [Target = 1]: \t\t', y_pred)
+        
+        # For features and features names after feature engineering/one-hot-encoding/scaling
+        # FutureWarning: Function get_feature_names is deprecated; get_feature_names is deprecated in 1.0 and will be removed in 1.2.
+        # Please use get_feature_names_out instead.
+        df_cat = pd.DataFrame(data=cat_array_encoded, columns=ohe.get_feature_names_out())
+        df_num = pd.DataFrame(data=num_array, columns=numeric_feats)
+        # concatenating df_cat and df_num along columns
+        df_all = pd.concat([df_cat, df_num], axis=1)
+
+        return json.dumps({
+            "y_pred": y_pred,
+            "decision": np.where(np.array([y_pred]) > 0.5040000000000002, "Rejeté", "Approuvé")[0],
+            "features": df_all.to_json(orient="records"),
+            "feature_names": list(df_all.columns)
+        })
+            
 
 
