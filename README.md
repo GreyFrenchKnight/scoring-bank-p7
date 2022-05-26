@@ -1,8 +1,8 @@
 # scoring-bank-p7
 #### What this is - A demonstration/tutorial on deploying a python Machine Learning model to Heroku 
-![ml_life_cycle](https://github.com/incubated-geek-cc/mental-healthcare-predictors/blob/main/ml_life_cycle.png)
+![ml_life_cycle](https://github.com/GreyFrenchKnight/scoring-bank-p7-dashboard/blob/f0df22a5040b12fc0506d47cf5d2a262e201c95d/streamlit_deployment.PNG)
 #### Full article can be found at: [Towards Data Science](https://towardsdatascience.com/deploy-your-python-machine-learning-models-on-heroku-in-3-steps-dc5b6aca73d9)
-#### Web application deployed at: https://your-custom-app-name.herokuapp.com/
+#### API deployed at: https://your-custom-app-name.herokuapp.com/
 
 #### Step 1. Create a new app on Heroku "scoring-bank-p7"
 
@@ -23,7 +23,7 @@
 * [project folder pathname] > heroku git:remote -a scoring-bank-p7
 * [project folder pathname] > git push heroku master
 
-#### Step 4. Testing application
+#### Step 4. Testing API
 * Heroku dashboard https://dashboard.heroku.com/apps/scoring-bank-p7
 * accessing app https://scoring-bank-p7.herokuapp.com/
 * checking logs https://dashboard.heroku.com/apps/scoring-bank-p7/logs
