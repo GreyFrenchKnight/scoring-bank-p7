@@ -11,7 +11,7 @@
 * [any folder pathname] > cd [project folder pathname]
 * [project folder pathname] > python -m venv venv
 * [project folder pathname] > CALL venv/Scripts/activate.bat
-* [project folder pathname] > pip install numpy pandas joblib pydantic fastapi sklearn lightgbm uvicorn gunicorn
+* [project folder pathname] > pip install numpy pandas joblib pydantic fastapi sklearn uvicorn gunicorn
 * [project folder pathname] > pip freeze > requirements.txt
 
 #### Step 3. Initiate GIT in the project folder
