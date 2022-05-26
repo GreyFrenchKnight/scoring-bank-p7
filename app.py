@@ -115,13 +115,12 @@ else:
     
     @app.get("/shap_expected_value")
     async def get_shap_expected_value():
-        print(shap_expected_value)
         return shap_expected_value
     
     @app.get("/shap_shap_values")
     async def get_shap_shap_values():    
         #return Response(json.dumps(shap_shap_values.tolist()), media_type="application/json")
-        return FileResponse(path='bin/shap_shap_values.txt', filename='shap_shap_values.txt', media_type='application/octet-stream') 
+        return FileResponse(path='bin/shap_shap_values.npz', filename='shap_shap_values.npz', media_type='application/octet-stream') 
     
     #class Criterion(BaseModel):
     #    feature: str
