@@ -1,6 +1,6 @@
 # scoring-bank-p7
 #### What this is - A demonstration/tutorial on deploying a python Machine Learning model to Heroku 
-![ml_life_cycle](https://github.com/GreyFrenchKnight/scoring-bank-p7-dashboard/blob/f0df22a5040b12fc0506d47cf5d2a262e201c95d/streamlit_deployment.PNG)
+![ml_life_cycle](https://github.com/incubated-geek-cc/mental-healthcare-predictors/blob/main/ml_life_cycle.png)
 #### Full article can be found at: [Towards Data Science](https://towardsdatascience.com/deploy-your-python-machine-learning-models-on-heroku-in-3-steps-dc5b6aca73d9)
 #### API deployed at: https://your-custom-app-name.herokuapp.com/
 
