@@ -6,6 +6,7 @@ from pydantic import create_model
 from fastapi import FastAPI, Response
 from fastapi.responses import FileResponse
 import json
+import lightgbm
 
 # https://realpython.com/fastapi-python-web-apis/
 # launch API in local
