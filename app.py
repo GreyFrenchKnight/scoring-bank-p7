@@ -1,15 +1,9 @@
-# numpy and pandas for data manipulation
 import numpy as np
 import pandas as pd
-
-# File system management
 import os
-
 import joblib
-from pydantic import create_model #, BaseModel
-# from typing import List
-
-from fastapi import FastAPI, Response #, Request
+from pydantic import create_model
+from fastapi import FastAPI, Response
 from fastapi.responses import FileResponse
 import json
 
@@ -37,7 +31,6 @@ def readFileToList(filepath, label):
     _file.close()
     
     return data_list
-
 
 if not os.path.exists('bin'):
     print('problem, bin folder not existing in path')
@@ -81,9 +74,6 @@ else:
     
     shap_expected_value = float(readFileToList('bin/shap_expected_value.txt', 'SHAP expected value:')[0])
     
-    #shap_shap_values = np.genfromtxt('bin/shap_shap_values.txt', dtype=float, delimiter=" ")
-    #print("\nSHAP SHAP value:", shap_shap_values)
-    
     print("\n")
     
     #
@@ -95,11 +85,6 @@ else:
     @app.get("/")
     async def root():
         return {"message": "Loan repayment API deployed"}
-    
-    #@app.get("/model")
-    #async def get_model(response: Response):
-    #    response.headers["Accept"] = 'application/octet-stream'
-    #    return FileResponse(path='bin/model.joblib', filename='model.joblib', media_type='application/octet-stream') 
     
     @app.get("/features_for_model_prediction")
     async def get_features_for_model_prediction():
@@ -121,47 +106,6 @@ else:
     async def get_shap_shap_values():    
         #return Response(json.dumps(shap_shap_values.tolist()), media_type="application/json")
         return FileResponse(path='bin/shap_shap_values.npz', filename='shap_shap_values.npz', media_type='application/octet-stream') 
-    
-    #class Criterion(BaseModel):
-    #    feature: str
-    #    value: str | int
-    #    
-    #class Filters(BaseModel):
-    #    data: List[Criterion]
-    #
-    #def filter(df, col, value):
-    #	'''Fonction pour filtrer le dataframe selon la colonne et la valeur définies'''
-    #	if value != 'All':
-    #		db_filtered = df.loc[df[col]==value]
-    #	else:
-    #		db_filtered = df
-    #	return db_filtered
-    
-    #    @app.post("/filter_clients")
-    #     async def filter_clients(filters: Filters):
-    #         print('filters: \t', filters)
-    #         print('filters.data: \t', filters.data)
-            
-    #         #Affichage du dataframe selon les filtres définis
-    #         db_display=db_test[['SK_ID_CURR','CODE_GENDER','YEARS_BIRTH','NAME_FAMILY_STATUS','CNT_CHILDREN',
-    #         'NAME_EDUCATION_TYPE','FLAG_OWN_CAR','FLAG_OWN_REALTY','NAME_HOUSING_TYPE',
-    #         'NAME_INCOME_TYPE','AMT_INCOME_TOTAL','AMT_CREDIT','AMT_ANNUITY']]
-    #         db_display['YEARS_BIRTH']=db_display['YEARS_BIRTH'].astype(str)
-    #         db_display['CNT_CHILDREN']=db_display['CNT_CHILDREN'].astype(str)
-    #         db_display['AMT_INCOME_TOTAL']=db_test['AMT_INCOME_TOTAL'].apply(lambda x: int(x))
-    #         db_display['AMT_CREDIT']=db_test['AMT_CREDIT'].apply(lambda x: int(x))
-    #         db_display['AMT_ANNUITY']=db_test['AMT_ANNUITY'].apply(lambda x: x if pd.isna(x) else int(x))
-            
-    #         for criteria in filters.data:
-    #             print(criteria.feature + " - " + criteria.value)
-    #             db_display=filter(db_display, criteria.feature, criteria.value)
-            
-    #         #return {
-    #         #    "status" : "SUCCESS",
-    #         #    "data" : db_display
-    #         #}
-        
-    #         return Response(db_display.to_json(orient="records"), media_type="application/json")
     
     @app.post("/loan_repayment")
     async def get_loan_repayment_prediction(client: ClientModel):
@@ -202,6 +146,3 @@ else:
             "features": df_all.to_json(orient="records"),
             "feature_names": list(df_all.columns)
         })
-            
-
-

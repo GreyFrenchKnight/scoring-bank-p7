@@ -23,5 +23,6 @@
 * [project folder pathname] > git push heroku master
 
 #### Step 4. Testing application
+* Heroku dashboard https://dashboard.heroku.com/apps/scoring-bank-p7
 * accessing app https://scoring-bank-p7.herokuapp.com/
 * checking logs https://dashboard.heroku.com/apps/scoring-bank-p7/logs
